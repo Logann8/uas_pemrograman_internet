@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
 include 'koneksi.php';
 $result = mysqli_query($conn, "SELECT * FROM penghuni");
 ?>
@@ -8,66 +13,156 @@ $result = mysqli_query($conn, "SELECT * FROM penghuni");
     <title>Daftar Penghuni Kost</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
             margin: 0;
             padding: 0;
         }
-        .container {
-            max-width: 700px;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 32px 40px 40px 40px;
-        }
-        h1 {
+        .header {
+            background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
+            color: #fff;
+            padding: 32px 0 24px 0;
             text-align: center;
-            color: #333;
+            letter-spacing: 2px;
+            font-size: 2.2rem;
+            font-weight: bold;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            position: relative;
         }
-        a.button {
-            display: inline-block;
+        .logout-btn {
+            position: absolute;
+            right: 40px;
+            top: 32px;
+            background: #fff;
+            color: #007bff;
+            border: none;
+            border-radius: 18px;
+            padding: 7px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.10);
+            transition: background 0.2s, color 0.2s;
+        }
+        .logout-btn:hover {
             background: #007bff;
             color: #fff;
-            padding: 8px 18px;
-            border-radius: 4px;
-            text-decoration: none;
-            margin-bottom: 18px;
-            transition: background 0.2s;
         }
-        a.button:hover {
-            background: #0056b3;
+        .user-info {
+            position: absolute;
+            left: 40px;
+            top: 36px;
+            font-size: 1rem;
+            color: #e3f0ff;
+            font-weight: 500;
+        }
+        .container {
+            max-width: 750px;
+            margin: 40px auto 0 auto;
+            background: rgba(255,255,255,0.90);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            padding: 36px 44px 44px 44px;
+            border: 2px solid #e3e8f0;
+            animation: fadeIn 1.2s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
+            color: #fff;
+            padding: 10px 28px;
+            border-radius: 24px;
+            text-decoration: none;
+            margin-bottom: 22px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.10);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .button:hover {
+            background: linear-gradient(90deg, #0056b3 0%, #0096c7 100%);
+            transform: scale(1.04);
         }
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin-top: 10px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         }
         th, td {
-            padding: 10px 12px;
+            padding: 13px 14px;
             border-bottom: 1px solid #e0e0e0;
             text-align: left;
         }
         th {
-            background: #f0f4f8;
+            background: linear-gradient(90deg, #e3f0ff 0%, #f0fcff 100%);
+            color: #007bff;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
         }
         tr:last-child td {
             border-bottom: none;
+        }
+        tr:hover td {
+            background: #f3faff;
+            transition: background 0.2s;
         }
         a.hapus {
             color: #dc3545;
             text-decoration: none;
             font-weight: bold;
+            border-radius: 4px;
+            padding: 6px 14px;
+            background: #ffeaea;
+            transition: background 0.2s, color 0.2s;
         }
         a.hapus:hover {
-            text-decoration: underline;
+            background: #ffb3b3;
+            color: #fff;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 16px 4vw 24px 4vw;
+            }
+            .header {
+                font-size: 1.3rem;
+                padding: 18px 0 12px 0;
+            }
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.95rem;
+            }
+            .logout-btn, .user-info {
+                position: static;
+                display: block;
+                margin: 0 auto 8px auto;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        Daftar Penghuni Kost
+        <span class="user-info">👤 <?= htmlspecialchars($_SESSION['nama']) ?></span>
+        <form method="post" action="logout.php" style="display:inline;">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
     <div class="container">
-        <h1>Daftar Penghuni Kost</h1>
-        <a href="tambah.php" class="button">Tambah Penghuni</a>
+        <a href="tambah.php" class="button">+ Tambah Penghuni</a>
         <table>
             <tr>
                 <th>No</th>
