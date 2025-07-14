@@ -5,7 +5,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 include 'koneksi.php';
-$result = mysqli_query($conn, "SELECT * FROM penghuni");
+$result = mysqli_query($conn, "SELECT * FROM penghuni ORDER BY kamar ASC");
 ?>
 <!DOCTYPE html>
 <html>
@@ -19,49 +19,9 @@ $result = mysqli_query($conn, "SELECT * FROM penghuni");
             margin: 0;
             padding: 0;
         }
-        .header {
-            background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
-            color: #fff;
-            padding: 32px 0 24px 0;
-            text-align: center;
-            letter-spacing: 2px;
-            font-size: 2.2rem;
-            font-weight: bold;
-            border-bottom-left-radius: 40px;
-            border-bottom-right-radius: 40px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-            position: relative;
-        }
-        .logout-btn {
-            position: absolute;
-            right: 40px;
-            top: 32px;
-            background: #fff;
-            color: #007bff;
-            border: none;
-            border-radius: 18px;
-            padding: 7px 20px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,123,255,0.10);
-            transition: background 0.2s, color 0.2s;
-        }
-        .logout-btn:hover {
-            background: #007bff;
-            color: #fff;
-        }
-        .user-info {
-            position: absolute;
-            left: 40px;
-            top: 36px;
-            font-size: 1rem;
-            color: #e3f0ff;
-            font-weight: 500;
-        }
         .container {
-            max-width: 750px;
-            margin: 40px auto 0 auto;
+            max-width: 700px;
+            margin: 40px auto;
             background: rgba(255,255,255,0.90);
             border-radius: 18px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.18);
@@ -72,6 +32,11 @@ $result = mysqli_query($conn, "SELECT * FROM penghuni");
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 28px;
         }
         .button {
             display: inline-block;
@@ -95,7 +60,6 @@ $result = mysqli_query($conn, "SELECT * FROM penghuni");
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 10px;
             background: rgba(255,255,255,0.95);
             border-radius: 12px;
             overflow: hidden;
@@ -136,38 +100,22 @@ $result = mysqli_query($conn, "SELECT * FROM penghuni");
             .container {
                 padding: 16px 4vw 24px 4vw;
             }
-            .header {
-                font-size: 1.3rem;
-                padding: 18px 0 12px 0;
-            }
             th, td {
                 padding: 8px 6px;
                 font-size: 0.95rem;
-            }
-            .logout-btn, .user-info {
-                position: static;
-                display: block;
-                margin: 0 auto 8px auto;
-                text-align: center;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        Daftar Penghuni Kost
-        <span class="user-info">👤 <?= htmlspecialchars($_SESSION['nama']) ?></span>
-        <form method="post" action="logout.php" style="display:inline;">
-            <button type="submit" class="logout-btn">Logout</button>
-        </form>
-    </div>
     <div class="container">
+        <h1>Daftar Penghuni Kost</h1>
         <a href="tambah.php" class="button">+ Tambah Penghuni</a>
         <table>
             <tr>
                 <th>No</th>
                 <th>Nama</th>
-                <th>Kamar</th>
+                <th>Nomor Kamar</th>
                 <th>Aksi</th>
             </tr>
             <?php $no=1; while($row = mysqli_fetch_assoc($result)): ?>

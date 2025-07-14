@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['username'] = $row['username'];
             $_SESSION['nama'] = $row['nama'];
-            header('Location: index.php');
+            header('Location: dashboard.php');
             exit;
         } else {
             $message = 'Password salah!';
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login Pemilik Kost</title>
+    <title>Login Admin Kost</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -45,6 +45,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             text-align: center;
             color: #007bff;
             margin-bottom: 24px;
+        }
+        .admin-info {
+            text-align: center;
+            color: #555;
+            margin-bottom: 18px;
+            font-size: 1rem;
         }
         form {
             display: flex;
@@ -89,7 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <div class="login-container">
-        <h2>Login Pemilik Kost</h2>
+        <h2>Login Admin Kost</h2>
+        <div class="admin-info">Aplikasi ini hanya dapat diakses oleh admin.<br>Silakan login dengan username dan password admin.</div>
         <?php if ($message): ?>
             <div class="message"><?php echo $message; ?></div>
         <?php endif; ?>
@@ -98,7 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Login</button>
         </form>
-        <a href="register.php">Belum punya akun? Daftar</a>
         <a href="index.php">&larr; Kembali</a>
     </div>
 </body>
