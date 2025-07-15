@@ -14,7 +14,7 @@ while ($row = mysqli_fetch_assoc($res)) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dashboard Kamar Kost</title>
+    <title>Kamar Kosan Melati</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -50,7 +50,7 @@ while ($row = mysqli_fetch_assoc($res)) {
         }
         .kamar-box {
             width: 90px;
-            height: 110px;
+            height: 140px;
             background: #f7fafd;
             border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.07);
@@ -83,7 +83,13 @@ while ($row = mysqli_fetch_assoc($res)) {
             font-size: 0.95rem;
             color: #333;
             text-align: center;
-            margin-bottom: 6px;
+            margin-bottom: 2px;
+        }
+        .detail {
+            font-size: 0.85rem;
+            color: #555;
+            text-align: center;
+            margin-bottom: 2px;
         }
         .btn {
             display: inline-block;
@@ -103,6 +109,57 @@ while ($row = mysqli_fetch_assoc($res)) {
             background: linear-gradient(90deg, #0056b3 0%, #0096c7 100%);
             transform: scale(1.04);
         }
+        .info-btn {
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 0 auto 4px auto;
+            box-shadow: 0 1px 4px rgba(40,167,69,0.10);
+            transition: background 0.2s;
+        }
+        .info-btn:hover {
+            background: #218838;
+        }
+        .modal-bg {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px 32px 18px 32px;
+            min-width: 260px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            text-align: center;
+            position: relative;
+        }
+        .modal h3 {
+            margin: 0 0 12px 0;
+            color: #007bff;
+        }
+        .modal .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #888;
+            cursor: pointer;
+        }
         @media (max-width: 600px) {
             .container {
                 padding: 16px 2vw 24px 2vw;
@@ -112,7 +169,7 @@ while ($row = mysqli_fetch_assoc($res)) {
             }
             .kamar-box {
                 width: 70px;
-                height: 90px;
+                height: 120px;
             }
             .nomor {
                 font-size: 1.1rem;
@@ -122,14 +179,16 @@ while ($row = mysqli_fetch_assoc($res)) {
 </head>
 <body>
     <div class="container">
-        <h1>Dashboard Kamar Kost</h1>
+        <h1>Kamar Kosan Melati</h1>
         <div class="grid">
             <?php for ($i=1; $i<=30; $i++): ?>
             <div class="kamar-box">
                 <div class="nomor"><?= $i ?></div>
                 <div class="status <?= isset($penghuni[$i]) ? 'isi' : 'kosong' ?>"></div>
                 <?php if (isset($penghuni[$i])): ?>
-                    <div class="nama">ISI<br><?= htmlspecialchars($penghuni[$i]['nama']) ?></div>
+                    <button class="info-btn" onclick="showModal('<?= htmlspecialchars(addslashes($penghuni[$i]['nama'])) ?>','<?= htmlspecialchars(addslashes($penghuni[$i]['alamat'])) ?>','<?= $penghuni[$i]['id'] ?>','<?= htmlspecialchars(addslashes($penghuni[$i]['jenis_kelamin'])) ?>')" title="Lihat detail">i</button>
+                    <div class="nama" style="color:#28a745;font-weight:bold;">ISI</div>
+                    <div class="nama"><?= htmlspecialchars($penghuni[$i]['nama']) ?></div>
                 <?php else: ?>
                     <div class="nama" style="color:#dc3545;">KOSONG</div>
                     <a href="tambah.php?kamar=<?= $i ?>" class="btn">Isi Data</a>
@@ -137,6 +196,33 @@ while ($row = mysqli_fetch_assoc($res)) {
             </div>
             <?php endfor; ?>
         </div>
+        <div class="modal-bg" id="modalBg">
+            <div class="modal" id="modalBox">
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+                <h3 id="modalNama"></h3>
+                <div id="modalJK"></div>
+                <div id="modalAlamat"></div>
+                <form id="hapusForm" method="post" action="hapus.php" style="margin-top:18px;">
+                    <input type="hidden" name="id" id="modalId">
+                    <button type="submit" class="btn" style="background:#dc3545;">Hapus</button>
+                </form>
+            </div>
+        </div>
+        <script>
+        function showModal(nama, alamat, id, jk) {
+            document.getElementById('modalNama').textContent = nama;
+            document.getElementById('modalJK').textContent = 'Jenis Kelamin: ' + jk;
+            document.getElementById('modalAlamat').textContent = 'Alamat: ' + alamat;
+            document.getElementById('modalId').value = id;
+            document.getElementById('modalBg').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('modalBg').style.display = 'none';
+        }
+        document.getElementById('modalBg').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        </script>
     </div>
 </body>
 </html> 

@@ -5,8 +5,10 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 include 'koneksi.php';
-$id = $_GET['id'];
-mysqli_query($conn, "DELETE FROM penghuni WHERE id=$id");
-header("Location: index.php");
+$id = isset($_POST['id']) ? (int)$_POST['id'] : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
+if ($id > 0) {
+    mysqli_query($conn, "DELETE FROM penghuni WHERE id=$id");
+}
+header("Location: dashboard.php");
 exit;
 ?> 
