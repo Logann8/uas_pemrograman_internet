@@ -1,39 +1,49 @@
 <?php
+ob_start();
 session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
 include 'koneksi.php';
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($id < 1) {
+    header('Location: kelola_barang.php');
+    exit;
+}
+// Ambil data barang
+$q = mysqli_query($conn, "SELECT * FROM tb_barang WHERE id='$id'");
+$data = mysqli_fetch_assoc($q);
+if (!$data) {
+    header('Location: kelola_barang.php');
+    exit;
+}
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $password = $_POST['password'];
-    $q = mysqli_query($conn, "SELECT * FROM user WHERE username='$username'");
-    if ($row = mysqli_fetch_assoc($q)) {
-        if (password_verify($password, $row['password'])) {
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['username'] = $row['username'];
-            $_SESSION['nama'] = $row['nama'];
-            header('Location: admin.php');
-            exit;
-        } else {
-            $message = 'Password salah!';
-        }
+    $nama_barang = trim($_POST['nama_barang'] ?? '');
+    $keterangan = trim($_POST['keterangan'] ?? '');
+    if ($nama_barang === '') {
+        $message = 'Nama barang wajib diisi!';
     } else {
-        $message = 'Username tidak ditemukan!';
+        mysqli_query($conn, "UPDATE tb_barang SET nama_barang='$nama_barang', keterangan='$keterangan' WHERE id='$id'");
+        header('Location: kelola_barang.php');
+        exit;
     }
 }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login Admin Kost</title>
+    <title>Edit Barang</title>
     <style>
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: Arial, sans-serif;
             background: url('background.jpg') no-repeat center center fixed;
             background-size: cover;
             margin: 0;
             padding: 0;
         }
-        .login-container {
+        .container {
             max-width: 400px;
             margin: 60px auto;
             background: rgba(255,255,255,0.92);
@@ -41,27 +51,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             box-shadow: 0 4px 24px rgba(0,0,0,0.10);
             padding: 32px 32px 24px 32px;
         }
-        h2 {
+        h1 {
             text-align: center;
             color: #007bff;
-            margin-bottom: 24px;
-        }
-        .admin-info {
-            text-align: center;
-            color: #555;
-            margin-bottom: 18px;
-            font-size: 1rem;
         }
         form {
             display: flex;
             flex-direction: column;
             gap: 14px;
         }
-        input[type="text"], input[type="password"] {
-            padding: 9px 12px;
+        input[type="text"], textarea {
+            padding: 8px 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 15px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 50px;
         }
         button {
             background: linear-gradient(90deg, #007bff 0%, #00c6ff 100%);
@@ -77,9 +84,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         button:hover {
             background: linear-gradient(90deg, #0056b3 0%, #0096c7 100%);
         }
-        .message {
-            text-align: center;
+        .info {
             color: #dc3545;
+            text-align: center;
             margin-bottom: 10px;
         }
         a {
@@ -94,18 +101,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login Admin Kost</h2>
-        <div class="admin-info">Aplikasi ini hanya dapat diakses oleh admin.<br>Silakan login dengan username dan password admin.</div>
+    <div class="container">
+        <h1>Edit Barang</h1>
         <?php if ($message): ?>
-            <div class="message"><?php echo $message; ?></div>
+            <div class="info"><?= $message ?></div>
         <?php endif; ?>
         <form method="post">
-            <input type="text" name="username" placeholder="Username" required autofocus>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
+            <label>Nama Barang:
+                <input type="text" name="nama_barang" required value="<?= htmlspecialchars($data['nama_barang']) ?>">
+            </label>
+            <label>Keterangan:
+                <textarea name="keterangan"><?= htmlspecialchars($data['keterangan']) ?></textarea>
+            </label>
+            <button type="submit">Simpan Perubahan</button>
         </form>
-        <a href="index.php">&larr; Kembali</a>
+        <a href="kelola_barang.php">&larr; Kembali ke Data Barang</a>
     </div>
+<?php ob_end_flush(); ?>
 </body>
 </html> 

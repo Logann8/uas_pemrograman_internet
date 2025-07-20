@@ -5,12 +5,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 include 'koneksi.php';
-$penghuni = mysqli_query($conn, "SELECT * FROM tb_penghuni ORDER BY id DESC");
+$q = mysqli_query($conn, "SELECT kp.id, p.nama AS nama_penghuni, k.nomor AS nomor_kamar, kp.tgl_masuk, kp.tgl_keluar FROM tb_kmr_penghuni kp JOIN tb_penghuni p ON kp.id_penghuni = p.id JOIN tb_kamar k ON kp.id_kamar = k.id ORDER BY kp.id DESC");
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Kelola Data Penghuni</title>
+    <title>Kelola Relasi Kamar-Penghuni</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,7 +20,7 @@ $penghuni = mysqli_query($conn, "SELECT * FROM tb_penghuni ORDER BY id DESC");
             padding: 0;
         }
         .container {
-            max-width: 900px;
+            max-width: 950px;
             margin: 40px auto;
             background: rgba(255,255,255,0.97);
             border-radius: 18px;
@@ -94,37 +94,36 @@ $penghuni = mysqli_query($conn, "SELECT * FROM tb_penghuni ORDER BY id DESC");
             background: #ffb3b3;
             color: #fff;
         }
+        .aksi-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Kelola Data Penghuni</h1>
-        <a href="tambah_penghuni.php" class="button">+ Tambah Penghuni</a>
+        <h1>Kelola Relasi Kamar - Penghuni</h1>
+        <a href="tambah_kmr_penghuni.php" class="button" style="background:#6c757d;">+ Tambah Relasi</a>
         <a href="admin.php" class="button" style="background:#6c757d;">&larr; Kembali ke Menu Admin</a>
         <table>
             <tr>
                 <th>No</th>
-                <th>Nama</th>
-                <th>No. KTP</th>
-                <th>No. HP</th>
-                <th>Tgl Masuk</th>
-                <th>Tgl Keluar</th>
+                <th>Nama Penghuni</th>
+                <th>Nomor Kamar</th>
+                <th>Tanggal Masuk</th>
+                <th>Tanggal Keluar</th>
                 <th>Aksi</th>
             </tr>
-            <?php $no=1; while($row = mysqli_fetch_assoc($penghuni)): ?>
+            <?php $no=1; while($row = mysqli_fetch_assoc($q)): ?>
             <tr>
                 <td><?= $no++ ?></td>
-                <td><?= htmlspecialchars($row['nama']) ?></td>
-                <td><?= htmlspecialchars($row['no_ktp']) ?></td>
-                <td><?= htmlspecialchars($row['no_hp']) ?></td>
+                <td><?= htmlspecialchars($row['nama_penghuni']) ?></td>
+                <td><?= htmlspecialchars($row['nomor_kamar']) ?></td>
                 <td><?= htmlspecialchars($row['tgl_masuk']) ?></td>
                 <td><?= htmlspecialchars($row['tgl_keluar']) ?></td>
                 <td>
-                    <a href="edit_penghuni.php?id=<?= $row['id'] ?>" class="aksi-btn">Edit</a>
-                    <form method="post" action="hapus_penghuni.php" style="display:inline;" onsubmit="return confirm('Yakin hapus data penghuni ini?');">
-                        <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                        <button type="submit" class="aksi-btn">Hapus</button>
-                    </form>
+                    <a href="edit_kmr_penghuni.php?id=<?= $row['id'] ?>" class="button" style="background:#ffc107; color:#222;">Edit</a>
+                    <a href="hapus_kmr_penghuni.php?id=<?= $row['id'] ?>" class="button" style="background:#dc3545;" onclick="return confirm('Yakin ingin menghapus relasi ini?');">Hapus</a>
                 </td>
             </tr>
             <?php endwhile; ?>
