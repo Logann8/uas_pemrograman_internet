@@ -5,7 +5,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 include 'koneksi.php';
-$id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id > 0) {
     mysqli_query($conn, "DELETE FROM tb_barang WHERE id='$id'");
 }

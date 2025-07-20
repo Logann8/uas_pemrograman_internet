@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 include 'koneksi.php';
 // Query pembayaran
-$q = mysqli_query($conn, "SELECT b.id, p.nama AS penghuni, k.nomor AS kamar, t.bulan, t.jml_tagihan, b.jml_bayar, b.tgl_bayar FROM tb_bayar b JOIN tb_tagihan t ON b.id_tagihan=t.id JOIN tb_kmr_penghuni kp ON t.id_kmr_penghuni=kp.id JOIN tb_penghuni p ON kp.id_penghuni=p.id JOIN tb_kamar k ON kp.id_kamar=k.id ORDER BY b.tgl_bayar DESC, p.nama");
+$q = mysqli_query($conn, "SELECT b.id, p.nama AS penghuni, k.nomor AS kamar, t.bulan, t.jml_tagihan, b.jml_bayar, b.tgl_bayar, b.status FROM tb_bayar b JOIN tb_tagihan t ON b.id_tagihan=t.id JOIN tb_kmr_penghuni kp ON t.id_kmr_penghuni=kp.id JOIN tb_penghuni p ON kp.id_penghuni=p.id JOIN tb_kamar k ON kp.id_kamar=k.id ORDER BY b.tgl_bayar DESC, p.nama");
 if ($q === false) { die('Query error: ' . mysqli_error($conn)); }
 $data = [];
 while($row = mysqli_fetch_assoc($q)) $data[] = $row;
@@ -42,6 +42,7 @@ while($row = mysqli_fetch_assoc($q)) $data[] = $row;
                     <th>Tagihan</th>
                     <th>Jumlah Bayar</th>
                     <th>Tanggal Bayar</th>
+                    <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -54,6 +55,7 @@ while($row = mysqli_fetch_assoc($q)) $data[] = $row;
                     <td>Rp <?= number_format($row['jml_tagihan'],0,',','.') ?></td>
                     <td>Rp <?= number_format($row['jml_bayar'],0,',','.') ?></td>
                     <td><?= htmlspecialchars($row['tgl_bayar']) ?></td>
+                    <td><?= htmlspecialchars($row['status']) ?></td>
                     <td>
                         <a href="edit_pembayaran.php?id=<?= $row['id'] ?>" class="button" style="background:#ffc107; color:#222;">Edit</a>
                         <a href="hapus_pembayaran.php?id=<?= $row['id'] ?>" class="button" style="background:#dc3545;" onclick="return confirm('Yakin ingin menghapus pembayaran ini?');">Hapus</a>
